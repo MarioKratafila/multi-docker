@@ -1,0 +1,26 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t kratafila/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run kratafila/react-test npm test -- --coverage
+
+after_success:
+  - docker build -t kratafila/multi-client -f ./client/Dockerfile ./client
+  - docker build -t kratafila/multi-server -f ./server/Dockerfile ./server
+  - docker build -f kratafila/multi-nginx -f ./nginx/Dockerfile ./nginx
+  - docker build -f kratafila/multi-worker -f ./worker/Dockerfile ./worker
+
+  # Log in to docker cli
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+
+  # take all of our images and push them to the docker hub
+  - docker push kratafila/multi-client
+  - docker push kratafila/multi-server
+  - docker push kratafila/multi-nginx
+  - docker push kratafila/multi-worker
+
+
