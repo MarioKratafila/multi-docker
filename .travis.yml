@@ -24,7 +24,7 @@ after_success:
   - docker push kratafila/multi-worker
 
 deploy:
-  provoder: elasticbeanstalk
+  provider: elasticbeanstalk
   region: eu-central-1
   app: multi-docker-2
   env: MultiDocker2-env
